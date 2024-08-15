@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LinguisticsAPI.Application.Abstraction;
+using LinguisticsAPI.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers
@@ -7,11 +9,19 @@ namespace LinguisticsAPI.API.Controllers
 	[ApiController]
 	public class PostController : ControllerBase
 	{
+		private readonly IPostRepository _postRepository;
+		
+		public PostController(IPostRepository postRepository)
+		{
+			_postRepository = postRepository;
+		}
 
 		[HttpGet]
+		[ProducesResponseType(typeof(IQueryable<Post>), StatusCodes.Status200OK)]
 		public IActionResult GetProducts()
 		{
-			return Ok("Hello World");
+			var Products = _postRepository.GetPosts();
+			return Ok(Products);
 		}
 	}
 }
