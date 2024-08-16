@@ -1,5 +1,5 @@
 ﻿using LinguisticsAPI.Application.Abstraction;
-using LinguisticsAPI.Persistence.Concretes;
+//using LinguisticsAPI.Persistence.Concretes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ namespace LinguisticsAPI.Persistence
 	{
 		public static void AddPersistence(this IServiceCollection services)
 		{
-			services.AddSingleton<IPostRepository, PostRepository>();
 		}
 	}
 }
