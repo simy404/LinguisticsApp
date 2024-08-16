@@ -6,16 +6,11 @@ using System.Threading.Tasks;
 
 namespace LinguisticsAPI.Domain.Entities.Common
 {
-	public class BaseEntity
+	public abstract class BaseEntity
 	{
-		public Guid Id { get; set; }
-		public DateTime? CreatedDate { get; set; }
-		public DateTime? UpdatedDate { get; set; }
-		public DateTime? PublishedAt { get; set; }
-		public bool IsPublished { get; set; }
-		public bool IsDeleted { get; set; }
-		public int CreatedBy { get; set; }
-		public int UpdatedBy { get; set; }
-		public int DeletedBy { get; set; }
+		public int Id { get; set; }
+		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		public DateTime? UpdatedAt { get; set; }
+		public bool IsDeleted { get; set; } = false;
 	}
 }
