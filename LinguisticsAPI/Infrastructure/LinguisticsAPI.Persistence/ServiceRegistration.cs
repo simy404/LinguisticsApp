@@ -1,6 +1,7 @@
-﻿using LinguisticsAPI.Application.Abstraction;
-//using LinguisticsAPI.Persistence.Concretes;
+﻿using LinguisticsAPI.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace LinguisticsAPI.Persistence
 	{
 		public static void AddPersistence(this IServiceCollection services)
 		{
+
+			services.AddDbContext<LinguisticsAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString));
 		}
 	}
 }

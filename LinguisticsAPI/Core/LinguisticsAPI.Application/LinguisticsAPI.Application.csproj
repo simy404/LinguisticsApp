@@ -10,4 +10,8 @@
     <ProjectReference Include="..\LinguisticsAPI.Domain\LinguisticsAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstraction\" />
+  </ItemGroup>
+
 </Project>

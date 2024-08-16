@@ -9,12 +9,11 @@ namespace LinguisticsAPI.Domain.Entities
 {
 	public class Article : BaseEntity
 	{
-		public string Title { get; set; }
-		public string Content { get; set; }
-
 		public int AuthorId { get; set; }
 
 		public Author Author { get; set; }
+		public ICollection<ArticleTranslation> Translations { get; set; }
+
 		public ICollection<Tag> Tags { get; set; }
 
 	}
