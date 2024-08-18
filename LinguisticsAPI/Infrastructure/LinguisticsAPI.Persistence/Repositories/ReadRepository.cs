@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LinguisticsAPI.Persistence.Repositories
 {
@@ -21,12 +22,49 @@ namespace LinguisticsAPI.Persistence.Repositories
 
 		public DbSet<T> Table => _context.Set<T>();
 
-		public IQueryable<T> GetAll() => Table;
+		public IQueryable<T> GetAll(bool tracking = true)
+		{
+			var query = Table.AsQueryable();
 
-		public async Task<T> GetById(string id) => await Table.FirstOrDefaultAsync(data => data.Id.Equals(Guid.Parse(id)));
+			if (!tracking)
+			{
+				query = query.AsNoTracking();
+			} 
+			return query;
+		}
 
-		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method) => await Table.FirstOrDefaultAsync(method);
+		public async Task<T> GetById(string id, bool tracking = true) 
+		{
+			var query = Table.AsQueryable();
 
-		public IQueryable<T> GetWhere(Expression<Func<T, bool>> method) => Table.Where(method);
+			if (!tracking)
+			{
+				query = query.AsNoTracking();
+			}
+			return await query.FirstOrDefaultAsync(entity => entity.Id.Equals(Guid.Parse(id)));
+		}
+
+		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)
+		{
+			var query = Table.AsQueryable();
+
+			if (!tracking)
+			{
+				query = query.AsNoTracking();
+			}
+
+			return await query.SingleOrDefaultAsync(method);
+		}
+
+			public IQueryable<T> GetWhere(Expression<Func<T, bool>> method, bool tracking = true) 
+		{
+			var query = Table.Where(method);
+
+			if (!tracking)
+			{
+				query = query.AsNoTracking();
+			}
+			return query;
+		}
 	}
 }

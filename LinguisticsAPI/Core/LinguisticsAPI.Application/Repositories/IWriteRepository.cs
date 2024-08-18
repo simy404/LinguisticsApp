@@ -11,7 +11,7 @@ namespace LinguisticsAPI.Application.Repositories
 	{
 		Task<bool> AddAsync(T entity);
 		Task<bool> AddRangeAsync(List<T> entity);
-		bool UpdateAsync(T entity);
+		bool Update(T entity);
 		bool Remove(T entity);
 		bool RemoveRange(List<T> entity);
 		Task<bool> Remove(string id);

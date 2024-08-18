@@ -7,13 +7,13 @@ namespace LinguisticsAPI.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class AuthorController : ControllerBase
+	public class ArticleController : ControllerBase
 	{
 		//write article crud operations
-		private readonly IAuthorWriteRepository _writeRepository;
-		private readonly IAuthorReadRepository _readRepository;
+		private readonly IArticleWriteRepository _writeRepository;
+		private readonly IArticleReadRepository _readRepository;
 		
-		public AuthorController(IAuthorWriteRepository writeRepository, IAuthorReadRepository readRepository)
+		public ArticleController(IArticleWriteRepository writeRepository, IArticleReadRepository readRepository)
 		{
 			_writeRepository = writeRepository;
 			_readRepository = readRepository;
@@ -22,25 +22,22 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpGet]
 		public ActionResult Get()
 		{
-			var authors = _readRepository.GetAll();
-			return Ok(authors);
+			var articles = _readRepository.GetAll();
+			return Ok(articles);
 		}
 		
 		[HttpPost]
-		[Produces("application/json")]
-		[Consumes("application/json")]
-		[ProducesResponseType(typeof(Author), StatusCodes.Status200OK)]
-		public async Task<IActionResult> Create([FromBody] Author author)
+		public async Task<IActionResult> Create([FromBody] Article article)
 		{
-			await _writeRepository.AddAsync(author);
+			await _writeRepository.AddAsync(article);
 			await _writeRepository.SaveAsync();
 			return Ok();
 		}
 
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] Author author)
+		public async Task<IActionResult> Update([FromBody] Article article)
 		{
-			 _writeRepository.Update(author);
+			 _writeRepository.Update(article);
 			await _writeRepository.SaveAsync();
 			return Ok();
 		}
@@ -56,8 +53,8 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpGet("{id}")]
 		public ActionResult Get(string id)
 		{
-			var author = _readRepository.GetById(id);
-			return Ok(author);
+			var article = _readRepository.GetById(id);
+			return Ok(article);
 		}
 		
 	}

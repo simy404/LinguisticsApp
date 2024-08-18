@@ -57,7 +57,7 @@ namespace LinguisticsAPI.Persistence.Repositories
 			return true;
 		}
 
-		public bool UpdateAsync(T entity)
+		public bool Update(T entity)
 		{
 			EntityEntry entityEntry = Table.Update(entity);
 
