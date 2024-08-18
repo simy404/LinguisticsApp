@@ -9,7 +9,6 @@ namespace LinguisticsAPI.API.Controllers
 	[ApiController]
 	public class AuthorController : ControllerBase
 	{
-		//write article crud operations
 		private readonly IAuthorWriteRepository _writeRepository;
 		private readonly IAuthorReadRepository _readRepository;
 		
@@ -48,7 +47,7 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpDelete("{id}")]
 		public  async Task<IActionResult> Delete(string id)
 		{
-			_writeRepository.Remove(id);
+			await _writeRepository.Remove(id);
 			await _writeRepository.SaveAsync();
 			return Ok();
 		}

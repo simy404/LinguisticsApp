@@ -8,8 +8,14 @@ namespace LinguisticsAPI.API
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
+			//Add services to the container.
 			builder.Services.AddPersistence();
+
+			//CORS policy
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); // todo Origin should be configured
+			});
 
 			builder.Services.AddControllers();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -25,11 +31,11 @@ namespace LinguisticsAPI.API
 				app.UseSwaggerUI();
 			}
 
+			app.UseCors("AllowAll");
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
-
-
+			
 			app.MapControllers();
 
 			app.Run();
