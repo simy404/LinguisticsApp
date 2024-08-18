@@ -1,4 +1,6 @@
-﻿using LinguisticsAPI.Application.Repositories;
+﻿using System.Net;
+using LinguisticsAPI.Application.Repositories;
+using LinguisticsAPI.Application.ViewModel;
 using LinguisticsAPI.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,45 +21,57 @@ namespace LinguisticsAPI.API.Controllers
 		}
 		
 		[HttpGet]
+		[ProducesResponseType(typeof(IQueryable<AuthorCreateVM>), StatusCodes.Status201Created)]
 		public ActionResult Get()
 		{
-			var authors = _readRepository.GetAll();
-			return Ok(authors);
+			return Ok( _readRepository.GetAll(false));
+		}
+		
+		[HttpGet("{id}")]
+		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
+		public ActionResult Get(string id)
+		{
+			return Ok(_readRepository.GetById(id, false));
 		}
 		
 		[HttpPost]
-		[Produces("application/json")]
-		[Consumes("application/json")]
-		[ProducesResponseType(typeof(Author), StatusCodes.Status200OK)]
-		public async Task<IActionResult> Create([FromBody] Author author)
+		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
+		public async Task<IActionResult> Create([FromBody] AuthorCreateVM author)
 		{
-			await _writeRepository.AddAsync(author);
+			//TODO: Add AutoMapper
+			await _writeRepository.AddAsync(new Author()
+				{
+					Name = author.Name,
+					Bio = author.Bio,
+					Email = author.Email
+				});
+			
 			await _writeRepository.SaveAsync();
-			return Ok();
+			return StatusCode(StatusCodes.Status201Created);
 		}
 
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] Author author)
+		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM author)
 		{
-			 _writeRepository.Update(author);
+			 _writeRepository.Update(new Author()
+				 {
+					 Id = Guid.Parse(author.Id),
+					 Name = author.Name,
+					 Bio = author.Bio,
+					 Email = author.Email
+				 });
+			 
 			await _writeRepository.SaveAsync();
-			return Ok();
+			return Ok((int)HttpStatusCode.OK);
 		}
-
+		
 		[HttpDelete("{id}")]
 		public  async Task<IActionResult> Delete(string id)
 		{
 			await _writeRepository.Remove(id);
+			
 			await _writeRepository.SaveAsync();
 			return Ok();
 		}
-		
-		[HttpGet("{id}")]
-		public ActionResult Get(string id)
-		{
-			var author = _readRepository.GetById(id);
-			return Ok(author);
-		}
-		
 	}
 }

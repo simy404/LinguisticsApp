@@ -13,6 +13,7 @@ namespace LinguisticsAPI.Domain.Entities
 		public string Bio { get; set; }
 		public string Email { get; set; }
 
-		public ICollection<Article> Articles { get; set; } = new List<Article>();
+		public ICollection<Article> Articles { get; set; }
+
 	}
 }
