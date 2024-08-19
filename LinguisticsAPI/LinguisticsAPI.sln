@@ -7,17 +7,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{BB08AC23-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{1A8CF317-1347-46E5-9CC9-4286AA47F80C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinguisticsAPI.Infrastructure", "Infrastructure\LinguisticsAPI.Infrastructure\LinguisticsAPI.Infrastructure.csproj", "{066AB2CD-B033-4D0D-A8BC-6B0F44E403DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinguisticsAPI.Infrastructure", "Infrastructure\LinguisticsAPI.Infrastructure\LinguisticsAPI.Infrastructure.csproj", "{066AB2CD-B033-4D0D-A8BC-6B0F44E403DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinguisticsAPI.Persistence", "Infrastructure\LinguisticsAPI.Persistence\LinguisticsAPI.Persistence.csproj", "{27FF165E-54D2-469D-8A69-D435CB3037C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinguisticsAPI.Persistence", "Infrastructure\LinguisticsAPI.Persistence\LinguisticsAPI.Persistence.csproj", "{27FF165E-54D2-469D-8A69-D435CB3037C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinguisticsAPI.Domain", "Core\LinguisticsAPI.Domain\LinguisticsAPI.Domain.csproj", "{3D85B937-9554-4D27-805C-F4966455B863}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinguisticsAPI.Domain", "Core\LinguisticsAPI.Domain\LinguisticsAPI.Domain.csproj", "{3D85B937-9554-4D27-805C-F4966455B863}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinguisticsAPI.Application", "Core\LinguisticsAPI.Application\LinguisticsAPI.Application.csproj", "{01EF5B66-5194-48CD-9D8E-D91A0980EE32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinguisticsAPI.Application", "Core\LinguisticsAPI.Application\LinguisticsAPI.Application.csproj", "{01EF5B66-5194-48CD-9D8E-D91A0980EE32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{D289DA31-9476-4126-AB0F-B3BC364096D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinguisticsAPI.API", "Presentation\LinguisticsAPI.API\LinguisticsAPI.API.csproj", "{01867754-E2C3-45BF-8F2E-07231281607F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinguisticsAPI.API", "Presentation\LinguisticsAPI.API\LinguisticsAPI.API.csproj", "{01867754-E2C3-45BF-8F2E-07231281607F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using LinguisticsAPI.Application.Repositories;
+using LinguisticsAPI.Application.RequestParameters;
+using LinguisticsAPI.Application.RequestParameters.Common;
 using LinguisticsAPI.Application.ViewModel;
 using LinguisticsAPI.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -21,17 +23,50 @@ namespace LinguisticsAPI.API.Controllers
 		}
 		
 		[HttpGet]
-		[ProducesResponseType(typeof(IQueryable<AuthorCreateVM>), StatusCodes.Status201Created)]
-		public ActionResult Get()
+		[ProducesResponseType(typeof(IEnumerable<Author>), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public ActionResult Get([FromQuery] Pagination p)
 		{
-			return Ok( _readRepository.GetAll(false));
+			if (p.PageSize <= 0 || p.PageNumber <= 0)
+			{
+				return BadRequest();
+			}
+
+			var totalCount = _readRepository.GetAll(false).Count();
+			var authors = _readRepository.GetAll(false)
+				.Skip((p.PageNumber - 1) * p.PageSize)
+				.Take(p.PageSize)
+				.ToList();
+
+			var totalPages = (int)Math.Ceiling(totalCount / (double)p.PageSize);
+    
+			var response = new PagedResponse<Author>
+			{
+				TotalCount = totalCount,
+				PageNumber = p.PageNumber,
+				PageSize = p.PageSize,
+				Items = authors,
+				PreviousPageUrl = p.PageNumber > 1 
+					? Url.Action(nameof(Get), new { pageNumber = p.PageNumber - 1, p.PageSize }) 
+					: null,
+				NextPageUrl = p.PageNumber < totalPages 
+					? Url.Action(nameof(Get), new { pageNumber = p.PageNumber + 1, p.PageSize }) 
+					: null
+			};
+
+			return Ok(response);
 		}
 		
 		[HttpGet("{id}")]
-		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
-		public ActionResult Get(string id)
+		[ProducesResponseType(typeof(Author), StatusCodes.Status200OK)]
+		public async Task<ActionResult> Get(string id)
 		{
-			return Ok(_readRepository.GetById(id, false));
+			var author = await _readRepository.GetById(id, false);
+			if (author is null)
+			{
+				return NotFound();
+			}
+			return Ok(author);
 		}
 		
 		[HttpPost]
@@ -49,7 +84,7 @@ namespace LinguisticsAPI.API.Controllers
 			await _writeRepository.SaveAsync();
 			return StatusCode(StatusCodes.Status201Created);
 		}
-
+		
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM author)
 		{
@@ -74,4 +109,5 @@ namespace LinguisticsAPI.API.Controllers
 			return Ok();
 		}
 	}
+	
 }
