@@ -38,6 +38,8 @@ namespace LinguisticsAPI.API.Controllers
 		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
 		public async Task<IActionResult> Create([FromBody] AuthorCreateVM author)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 			//TODO: Add AutoMapper
 			await _writeRepository.AddAsync(new Author()
 				{

@@ -1,3 +1,5 @@
+using FluentValidation.AspNetCore;
+using LinguisticsAPI.Application.Validators.Author;
 using LinguisticsAPI.Persistence;
 
 namespace LinguisticsAPI.API
@@ -17,7 +19,9 @@ namespace LinguisticsAPI.API
 				options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); // todo Origin should be configured
 			});
 
-			builder.Services.AddControllers();
+			builder.Services.AddControllers()
+				.AddFluentValidation(configration => configration.RegisterValidatorsFromAssemblyContaining<AuthorCreateValidator>());
+
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
