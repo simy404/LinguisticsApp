@@ -23,4 +23,8 @@
     <ProjectReference Include="..\..\Infrastructure\LinguisticsAPI.Persistence\LinguisticsAPI.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
