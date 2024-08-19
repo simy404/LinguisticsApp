@@ -28,7 +28,7 @@ namespace LinguisticsAPI.Application.Validators.Author
 				.NotEmpty().WithMessage("Email is required.")
 				.EmailAddress().WithMessage("Invalid email format.");
 		}
-
+		
 		private bool BeAValidGuid(string id)
 		{
 			return Guid.TryParse(id, out _);

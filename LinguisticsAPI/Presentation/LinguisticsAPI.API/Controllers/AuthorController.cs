@@ -21,25 +21,28 @@ namespace LinguisticsAPI.API.Controllers
 		}
 		
 		[HttpGet]
-		[ProducesResponseType(typeof(IQueryable<AuthorCreateVM>), StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(IQueryable<Author>), StatusCodes.Status200OK)]
 		public ActionResult Get()
 		{
 			return Ok( _readRepository.GetAll(false));
 		}
 		
 		[HttpGet("{id}")]
-		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
-		public ActionResult Get(string id)
+		[ProducesResponseType(typeof(Author), StatusCodes.Status200OK)]
+		public async Task<ActionResult> Get(string id)
 		{
-			return Ok(_readRepository.GetById(id, false));
+			var author = await _readRepository.GetById(id, false);
+			if (author is null)
+			{
+				return NotFound();
+			}
+			return Ok(author);
 		}
 		
 		[HttpPost]
 		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
 		public async Task<IActionResult> Create([FromBody] AuthorCreateVM author)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
 			//TODO: Add AutoMapper
 			await _writeRepository.AddAsync(new Author()
 				{
@@ -51,7 +54,7 @@ namespace LinguisticsAPI.API.Controllers
 			await _writeRepository.SaveAsync();
 			return StatusCode(StatusCodes.Status201Created);
 		}
-
+		
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM author)
 		{
