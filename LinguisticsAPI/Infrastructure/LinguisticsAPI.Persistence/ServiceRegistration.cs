@@ -15,7 +15,7 @@ namespace LinguisticsAPI.Persistence
 {
 	public static class ServiceRegistration
 	{
-		public static void AddPersistence(this IServiceCollection services)
+		public static void AddInfrastructure(this IServiceCollection services)
 		{
 
 			services.AddDbContext<LinguisticsAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString));

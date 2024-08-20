@@ -1,5 +1,6 @@
 using FluentValidation.AspNetCore;
 using LinguisticsAPI.Application.Validators.Author;
+using LinguisticsAPI.Infrastructure;
 using LinguisticsAPI.Persistence;
 
 namespace LinguisticsAPI.API
@@ -12,7 +13,7 @@ namespace LinguisticsAPI.API
 
 			//Add services to the container.
 			builder.Services.AddPersistence();
-
+			builder.Services.AddInfrastructure();
 			//CORS policy
 			builder.Services.AddCors(options =>
 			{
@@ -35,6 +36,7 @@ namespace LinguisticsAPI.API
 				app.UseSwaggerUI();
 			}
 
+			app.UseStaticFiles();
 			app.UseCors("AllowAll");
 			app.UseHttpsRedirection();
 
