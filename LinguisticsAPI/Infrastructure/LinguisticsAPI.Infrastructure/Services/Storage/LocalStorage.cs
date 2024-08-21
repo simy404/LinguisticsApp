@@ -1,20 +1,23 @@
 ﻿using System.Net;
-using LinguisticsAPI.Application.Services;
+using LinguisticsAPI.Application.Abstraction.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace LinguisticsAPI.Infrastructure.Services;
+namespace LinguisticsAPI.Infrastructure.Services.Storage;
 
-public class FileService : IFileService
-{   
+public class LocalStorage : ILocalStorage
+{
     private readonly IWebHostEnvironment _webHostEnvironment;
     
-    public FileService(IWebHostEnvironment webHostEnvironment)
+    public LocalStorage(IWebHostEnvironment webHostEnvironment)
     {
         _webHostEnvironment = webHostEnvironment;
     }
-    public async Task<HttpStatusCode> UploadFileAsync(IFormFileCollection files, string path)
+    
+    public async Task<(HttpStatusCode httpStatusCode, string filePath)> UploadFileAsync(IFormFile? formFile, string path)
     {
+        if(formFile is null || formFile.Length == 0)
+            return (HttpStatusCode.BadRequest, null);
         try
         {
             //wwwroot/resources/path
@@ -23,8 +26,6 @@ public class FileService : IFileService
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
             
-            foreach (var formFile in files)
-            {
                 string fileExtension = Path.GetExtension(formFile.FileName).ToLower();
                 string uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
                 string filePath = Path.Combine(uploadPath, uniqueFileName);
@@ -33,17 +34,26 @@ public class FileService : IFileService
                 {
                     await formFile.CopyToAsync(fileStream);
                 }
-            }
 
-            return HttpStatusCode.OK;
+            return (HttpStatusCode.OK, uniqueFileName);
         }
         catch (Exception ex)
         {
-            return HttpStatusCode.InternalServerError;
+            return (HttpStatusCode.InternalServerError, null);
         }
     }
 
+    public Task<HttpStatusCode> DeleteFileAsync(string path)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<string> GetFileAsync(string path)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool HasFile(string path, string fileName)
     {
         throw new NotImplementedException();
     }

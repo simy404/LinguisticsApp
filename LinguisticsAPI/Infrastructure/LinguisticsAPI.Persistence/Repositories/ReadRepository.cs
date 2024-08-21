@@ -2,13 +2,8 @@
 using LinguisticsAPI.Domain.Entities.Common;
 using LinguisticsAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace LinguisticsAPI.Persistence.Repositories
 {
@@ -35,13 +30,16 @@ namespace LinguisticsAPI.Persistence.Repositories
 
 		public async Task<T> GetById(string id, bool tracking = true) 
 		{
+			if(string.IsNullOrEmpty(id) || !Guid.TryParse(id , out Guid guidId))
+				return null;
+
 			var query = Table.AsQueryable();
 
 			if (!tracking)
 			{
 				query = query.AsNoTracking();
 			}
-			return await query.FirstOrDefaultAsync(entity => entity.Id.Equals(Guid.Parse(id)));
+			return await query.FirstOrDefaultAsync(entity => entity.Id.Equals(guidId));
 		}
 
 		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)
@@ -56,7 +54,7 @@ namespace LinguisticsAPI.Persistence.Repositories
 			return await query.SingleOrDefaultAsync(method);
 		}
 
-			public IQueryable<T> GetWhere(Expression<Func<T, bool>> method, bool tracking = true) 
+		public IQueryable<T> GetWhere(Expression<Func<T, bool>> method, bool tracking = true) 
 		{
 			var query = Table.Where(method);
 

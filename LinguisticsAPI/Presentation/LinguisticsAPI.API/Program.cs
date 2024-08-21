@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using LinguisticsAPI.Application.Validators.Author;
 using LinguisticsAPI.Infrastructure;
+using LinguisticsAPI.Infrastructure.Services.Storage;
 using LinguisticsAPI.Persistence;
 
 namespace LinguisticsAPI.API
@@ -14,12 +15,17 @@ namespace LinguisticsAPI.API
 			//Add services to the container.
 			builder.Services.AddPersistence();
 			builder.Services.AddInfrastructure();
+			
+			//Add storage to the container.
+			builder.Services.AddStorage<LocalStorage>();
+
 			//CORS policy
 			builder.Services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); // todo Origin should be configured
 			});
-
+			
+			// Fluent Validation
 			builder.Services.AddControllers()
 				.AddFluentValidation(configration => configration.RegisterValidatorsFromAssemblyContaining<AuthorCreateValidator>());
 
@@ -35,9 +41,13 @@ namespace LinguisticsAPI.API
 				app.UseSwagger();
 				app.UseSwaggerUI();
 			}
-
+			
+			// wwwroot
 			app.UseStaticFiles();
+			
+			// CORS
 			app.UseCors("AllowAll");
+			
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();

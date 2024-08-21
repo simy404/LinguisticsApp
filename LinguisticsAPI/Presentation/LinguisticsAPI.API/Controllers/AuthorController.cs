@@ -1,8 +1,8 @@
 ﻿using System.Net;
+using LinguisticsAPI.Application.Abstraction.Storage;
 using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Application.RequestParameters;
 using LinguisticsAPI.Application.RequestParameters.Common;
-using LinguisticsAPI.Application.Services;
 using LinguisticsAPI.Application.ViewModel;
 using LinguisticsAPI.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -15,35 +15,41 @@ namespace LinguisticsAPI.API.Controllers
 	{
 		private readonly IAuthorWriteRepository _writeRepository;
 		private readonly IAuthorReadRepository _readRepository;
-		private readonly IFileService _fileService;
+		private readonly IStorageService _storageService;
 
 		public AuthorController(IAuthorWriteRepository writeRepository, IAuthorReadRepository readRepository,
-			IFileService fileService)
+			IStorageService storageService)
 		{
 			_writeRepository = writeRepository;
 			_readRepository = readRepository;
-			_fileService = fileService;
+			_storageService = storageService;
 		}
 
 		[HttpGet]
-		[ProducesResponseType(typeof(PagedResponse<Author>), StatusCodes.Status200OK)]
-		[ProducesResponseType(typeof(IEnumerable<PagedResponse<Author>>), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(PagedResponse<AuthorUpdateVM>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
 		public ActionResult Get([FromQuery] Pagination p)
 		{
 			if (p.PageSize <= 0 || p.PageNumber <= 0)
 			{
-				return BadRequest();
+				return BadRequest("Invalid page size or page number");
 			}
 
 			var totalCount = _readRepository.GetAll(false).Count();
 			var authors = _readRepository.GetAll(false)
 				.Skip((p.PageNumber - 1) * p.PageSize)
 				.Take(p.PageSize)
-				.ToList();
+				.Select(author => new AuthorUpdateVM()
+				{
+					Id = author.Id.ToString(),
+					Name = author.Name,
+					Bio = author.Bio,
+					Email = author.Email
+				}).ToList();
 
 			var totalPages = (int)Math.Ceiling(totalCount / (double)p.PageSize);
 
-			var response = new PagedResponse<Author>
+			var response = new PagedResponse<AuthorUpdateVM>
 			{
 				TotalCount = totalCount,
 				PageNumber = p.PageNumber,
@@ -115,14 +121,15 @@ namespace LinguisticsAPI.API.Controllers
 
 		[HttpPost("[Action]")]
 		public async Task<IActionResult> Upload(string id, IFormFile file)
-		{
+		{	
+			
 			var author = await _readRepository.GetById(id, false);
 			if (author is null)
 			{
 				return NotFound();
 			}
 
-			var result = await _fileService.UploadFileAsync(new FormFileCollection { file }, "resources/authors");
+			var result = await _storageService.UploadFileAsync(file, "resources/authors");
 			// if (result == HttpStatusCode.OK)
 			// {
 			// 	author.ImagePath = file.FileName;
@@ -130,7 +137,7 @@ namespace LinguisticsAPI.API.Controllers
 			// 	return Ok();
 			// }
 
-			return StatusCode((int)result);
+			return StatusCode((int)result.httpStatusCode);
 		}
 	}
 }
