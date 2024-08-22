@@ -26,20 +26,15 @@ namespace LinguisticsAPI.API.Controllers
 		}
 
 		[HttpGet]
-		[ProducesResponseType(typeof(PagedResponse<AuthorUpdateVM>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(PagedResponse<AuthorVM>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
 		public ActionResult Get([FromQuery] Pagination p)
 		{
-			if (p.PageSize <= 0 || p.PageNumber <= 0)
-			{
-				return BadRequest("Invalid page size or page number");
-			}
-
 			var totalCount = _readRepository.GetAll(false).Count();
 			var authors = _readRepository.GetAll(false)
 				.Skip((p.PageNumber - 1) * p.PageSize)
 				.Take(p.PageSize)
-				.Select(author => new AuthorUpdateVM()
+				.Select(author => new AuthorVM()
 				{
 					Id = author.Id.ToString(),
 					Name = author.Name,
@@ -49,7 +44,7 @@ namespace LinguisticsAPI.API.Controllers
 
 			var totalPages = (int)Math.Ceiling(totalCount / (double)p.PageSize);
 
-			var response = new PagedResponse<AuthorUpdateVM>
+			var response = new PagedResponse<AuthorVM>
 			{
 				TotalCount = totalCount,
 				PageNumber = p.PageNumber,
@@ -62,19 +57,16 @@ namespace LinguisticsAPI.API.Controllers
 					? Url.Action(nameof(Get), new { pageNumber = p.PageNumber + 1, p.PageSize })
 					: null
 			};
-
 			return Ok(response);
 		}
 
 		[HttpGet("{id}")]
-		[ProducesResponseType(typeof(Author), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(AuthorVM), StatusCodes.Status200OK)]
 		public async Task<ActionResult> Get(string id)
 		{
 			var author = await _readRepository.GetById(id, false);
 			if (author is null)
-			{
 				return NotFound();
-			}
 
 			return Ok(author);
 		}
@@ -111,33 +103,34 @@ namespace LinguisticsAPI.API.Controllers
 		}
 
 		[HttpDelete("{id}")]
+		[ProducesResponseType(typeof(AuthorVM), StatusCodes.Status200OK)]
 		public async Task<IActionResult> Delete(string id)
 		{
-			await _writeRepository.Remove(id);
-
-			await _writeRepository.SaveAsync();
-			return Ok();
-		}
-
-		[HttpPost("[Action]")]
-		public async Task<IActionResult> Upload(string id, IFormFile file)
-		{	
-			
 			var author = await _readRepository.GetById(id, false);
 			if (author is null)
-			{
 				return NotFound();
+
+			await _writeRepository.Remove(id);
+			await _writeRepository.SaveAsync();
+			return Ok(author);
+		}
+
+		[HttpPost("{id}/profile-picture")]
+		[Consumes("multipart/form-data")]
+		[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+		public async Task<IActionResult> UploadProfilePicture(string id ,[FromForm] ProfilePictureVM profilePicture)
+		{
+			var result = await _storageService.UploadFileAsync(profilePicture.File, $"users/{id}/profile-picture");
+
+			if (result.httpStatusCode == HttpStatusCode.OK)
+			{
+				return Ok(result.filePath);
 			}
-
-			var result = await _storageService.UploadFileAsync(file, "resources/authors");
-			// if (result == HttpStatusCode.OK)
-			// {
-			// 	author.ImagePath = file.FileName;
-			// 	await _writeRepository.SaveAsync();
-			// 	return Ok();
-			// }
-
-			return StatusCode((int)result.httpStatusCode);
+			else
+			{
+				return BadRequest();
+			}
 		}
 	}
+
 }
