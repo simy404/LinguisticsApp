@@ -18,11 +18,11 @@ public class StorageService : IStorageService
     public Task<(HttpStatusCode, string)> UploadFileAsync(IFormFile file, string path)
         => _storage.UploadFileAsync(file, path);
     
-    public Task<HttpStatusCode> DeleteFileAsync(string path)
-        => _storage.DeleteFileAsync(path);
+    public Task<HttpStatusCode> DeleteFileAsync(string path, string fileName)
+        => _storage.DeleteFileAsync(path, fileName);
 
-    public Task<string> GetFileAsync(string path)
-        => _storage.GetFileAsync(path);
+    public Task<IFormFile> GetFileAsync(string path, string fileName)
+        => _storage.GetFileAsync(path, fileName);
 
     public bool HasFile(string path, string fileName)
         => _storage.HasFile(path, fileName);

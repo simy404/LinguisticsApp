@@ -118,12 +118,18 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpPost("{id}/profile-picture")]
 		[Consumes("multipart/form-data")]
 		[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-		public async Task<IActionResult> UploadProfilePicture(string id ,[FromForm] ProfilePictureVM profilePicture)
+		public async Task<IActionResult> UploadProfilePicture(string id, [FromForm] ProfilePictureVM profilePicture)
 		{
-			var result = await _storageService.UploadFileAsync(profilePicture.File, $"users/{id}/profile-picture");
+			var result = await _storageService.UploadFileAsync(profilePicture.File, $"resources/authors-images");
+			
 
 			if (result.httpStatusCode == HttpStatusCode.OK)
 			{
+				var author = await _readRepository.GetById(id, true);
+				if(author.ProfilePicture is not null)
+					_storageService.DeleteFileAsync("resources/authors-images", author.ProfilePicture);
+				author.ProfilePicture = result.filePath;
+				_writeRepository.SaveAsync();
 				return Ok(result.filePath);
 			}
 			else

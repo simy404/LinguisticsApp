@@ -43,18 +43,32 @@ public class LocalStorage : ILocalStorage
         }
     }
 
-    public Task<HttpStatusCode> DeleteFileAsync(string path)
-    {
-        throw new NotImplementedException();
+    public Task<HttpStatusCode> DeleteFileAsync(string path, string fileName)
+    {   
+        var combinePath = Path.Combine(path, fileName);
+        if(File.Exists(combinePath))
+        {
+            File.Delete(combinePath);
+            return Task.FromResult(HttpStatusCode.OK);
+        }
+        return Task.FromResult(HttpStatusCode.NotFound);
     }
 
-    public Task<string> GetFileAsync(string path)
+    public async Task<IFormFile> GetFileAsync(string path, string fileName)
     {
-        throw new NotImplementedException();
+        var combinePath = Path.Combine(path, fileName);
+        if (File.Exists(combinePath))
+        {
+            var memoryStream = new MemoryStream(await File.ReadAllBytesAsync(combinePath));
+            var file = new FormFile(memoryStream, 0, memoryStream.Length, null, Path.GetFileName(combinePath))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "application/octet-stream"
+            };
+            return file;
+        }
+        return null;
     }
 
-    public bool HasFile(string path, string fileName)
-    {
-        throw new NotImplementedException();
-    }
+    public bool HasFile(string path, string fileName) => File.Exists(Path.Combine(path, fileName));
 }
