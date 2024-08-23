@@ -36,7 +36,9 @@ namespace LinguisticsAPI.Persistence.Contexts
 				{
 					_ = e switch {
 						{ State: EntityState.Added } => entity.CreatedAt = DateTime.Now,
-						{ State: EntityState.Modified } => entity.UpdatedAt = DateTime.Now,};
+						{ State: EntityState.Modified } => entity.UpdatedAt = DateTime.Now,
+						_ =>  null,
+					};
 				}
 			});
 			

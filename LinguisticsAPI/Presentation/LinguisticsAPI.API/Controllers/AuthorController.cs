@@ -66,15 +66,22 @@ namespace LinguisticsAPI.API.Controllers
 		}
 
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM author)
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM authorVM)
 		{
-			_writeRepository.Update(_mapper.Map<Author>(author));
+			var author = await _readRepository.GetById(authorVM.Id, false);
+			if (author is null)
+				return NotFound();
+			
+			_writeRepository.Update(_mapper.Map<Author>(authorVM));
 			await _writeRepository.SaveAsync();
 			return Ok();
 		}
 
 		[HttpDelete("{id}")]
-		[ProducesResponseType(typeof(AuthorVM), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Delete(Guid id)
 		{
 			var author = await _readRepository.GetById(id, false);
@@ -83,7 +90,7 @@ namespace LinguisticsAPI.API.Controllers
 
 			await _writeRepository.Remove(id);
 			await _writeRepository.SaveAsync();
-			return Ok(author);
+			return NoContent();;
 		}
 
 		[HttpPost("{id}/profile-picture")]
