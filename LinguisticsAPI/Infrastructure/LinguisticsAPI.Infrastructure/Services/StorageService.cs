@@ -15,14 +15,14 @@ public class StorageService : IStorageService
     
     public string StorageName { get => _storage.GetType().Name; }
 
-    public Task<(HttpStatusCode, string)> UploadFileAsync(IFormFile file, string path)
-        => _storage.UploadFileAsync(file, path);
+    public async Task<(HttpStatusCode, string)> UploadFileAsync(IFormFile file, string path)
+        => await _storage.UploadFileAsync(file, path);
     
-    public Task<HttpStatusCode> DeleteFileAsync(string path, string fileName)
-        => _storage.DeleteFileAsync(path, fileName);
+    public async Task<HttpStatusCode> DeleteFileAsync(string path, string fileName)
+        => await _storage.DeleteFileAsync(path, fileName);
 
-    public Task<IFormFile> GetFileAsync(string path, string fileName)
-        => _storage.GetFileAsync(path, fileName);
+    public async Task<IFormFile> GetFileAsync(string path, string fileName)
+        => await _storage.GetFileAsync(path, fileName);
 
     public bool HasFile(string path, string fileName)
         => _storage.HasFile(path, fileName);

@@ -25,7 +25,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\resources\authors-images\" />
+    <Content Include="..\..\..\..\..\..\Downloads\the_numbers (4).png">
+      <Link>wwwroot\resources\authors-images\the_numbers (4).png</Link>
+    </Content>
+    <Content Remove="wwwroot\resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="wwwroot\resources\**" />
   </ItemGroup>
 
 </Project>

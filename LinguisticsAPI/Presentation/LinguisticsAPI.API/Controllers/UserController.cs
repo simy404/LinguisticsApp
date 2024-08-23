@@ -9,9 +9,9 @@ namespace LinguisticsAPI.API.Controllers
 	{
 	}
 	
-	public Task<IActionResult> Create([FromBody] UserCreateVM user)
-	{
-		return Ok();
-	}
+	// public Task<IActionResult> Create([FromBody] UserCreateVM user)
+	// {
+	// 	return Ok();
+	// }
 
 }
