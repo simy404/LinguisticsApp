@@ -1,8 +1,12 @@
 using FluentValidation.AspNetCore;
+using LinguisticsAPI.Application.Mapping;
 using LinguisticsAPI.Application.Validators.Author;
 using LinguisticsAPI.Infrastructure;
 using LinguisticsAPI.Infrastructure.Services.Storage;
 using LinguisticsAPI.Persistence;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace LinguisticsAPI.API
 {
@@ -12,14 +16,14 @@ namespace LinguisticsAPI.API
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			//Add services to the container.
+			// Add services to the container.
 			builder.Services.AddPersistence();
 			builder.Services.AddInfrastructure();
 			
-			//Add storage to the container.
+			// Add storage to the container.
 			builder.Services.AddStorage<LocalStorage>();
 
-			//CORS policy
+			// CORS policy
 			builder.Services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); // todo Origin should be configured
@@ -32,6 +36,9 @@ namespace LinguisticsAPI.API
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
+
+			// AutoMapper
+			builder.Services.AddAutoMapper(typeof(AuthorProfile));
 
 			var app = builder.Build();
 
