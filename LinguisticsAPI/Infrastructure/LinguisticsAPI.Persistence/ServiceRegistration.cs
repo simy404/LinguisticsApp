@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinguisticsAPI.Domain.Entities.Identity;
 
 namespace LinguisticsAPI.Persistence
 {
@@ -19,7 +20,10 @@ namespace LinguisticsAPI.Persistence
 		{
 
 			services.AddDbContext<LinguisticsAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString));
-
+			
+			// Identity
+			services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<LinguisticsAPIDbContext>();
+			
 			services.AddScoped<IArticleReadRepository, ArticleReadRepository>();
 			services.AddScoped<IArticleWriteRepository, ArticleWriteRepository>();
 			services.AddScoped<ILanguageReadRepository, LanguageReadRepository>();

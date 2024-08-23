@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LinguisticsAPI.Domain.Entities.Common;
+using LinguisticsAPI.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace LinguisticsAPI.Persistence.Contexts
 {
-	public class LinguisticsAPIDbContext : DbContext
+	public class LinguisticsAPIDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 	{
 		public LinguisticsAPIDbContext(DbContextOptions options) : base(options)
 		{
@@ -23,6 +25,8 @@ namespace LinguisticsAPI.Persistence.Contexts
 				.HasMany(a => a.Articles)
 				.WithOne(b => b.Author)
 				.IsRequired(false); // Author oluşturulurken Article zorunlu değil
+
+			base.OnModelCreating(modelBuilder);
 		}
 		
 		//Intercepter
