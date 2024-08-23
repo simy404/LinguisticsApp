@@ -1,10 +1,15 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using AutoMapper;
+using LinguisticsAPI.Application.Abstraction.Pagination;
 using LinguisticsAPI.Application.Abstraction.Storage;
 using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Application.RequestParameters;
 using LinguisticsAPI.Application.RequestParameters.Common;
 using LinguisticsAPI.Application.ViewModel;
 using LinguisticsAPI.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers
@@ -16,73 +21,46 @@ namespace LinguisticsAPI.API.Controllers
 		private readonly IAuthorWriteRepository _writeRepository;
 		private readonly IAuthorReadRepository _readRepository;
 		private readonly IStorageService _storageService;
+		private readonly IPaginationService _paginationService;
+		private readonly IMapper _mapper;
 
 		public AuthorController(IAuthorWriteRepository writeRepository, IAuthorReadRepository readRepository,
-			IStorageService storageService)
+			IStorageService storageService, IPaginationService paginationService, IMapper mapper)
 		{
 			_writeRepository = writeRepository;
 			_readRepository = readRepository;
 			_storageService = storageService;
+			_paginationService = paginationService;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(typeof(PagedResponse<AuthorVM>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-		public ActionResult Get([FromQuery] Pagination p)
+		public async Task<ActionResult> Get([FromQuery] Pagination p)
 		{
-			var totalCount = _readRepository.GetAll(false).Count();
-			var authors = _readRepository.GetAll(false)
-				.Skip((p.PageNumber - 1) * p.PageSize)
-				.Take(p.PageSize)
-				.Select(author => new AuthorVM()
-				{
-					Id = author.Id.ToString(),
-					Name = author.Name,
-					Bio = author.Bio,
-					Email = author.Email
-				}).ToList();
-
-			var totalPages = (int)Math.Ceiling(totalCount / (double)p.PageSize);
-
-			var response = new PagedResponse<AuthorVM>
-			{
-				TotalCount = totalCount,
-				PageNumber = p.PageNumber,
-				PageSize = p.PageSize,
-				Items = authors,
-				PreviousPageUrl = p.PageNumber > 1
-					? Url.Action(nameof(Get), new { pageNumber = p.PageNumber - 1, p.PageSize })
-					: null,
-				NextPageUrl = p.PageNumber < totalPages
-					? Url.Action(nameof(Get), new { pageNumber = p.PageNumber + 1, p.PageSize })
-					: null
-			};
+			var authors = _readRepository.GetAll(false);
+			var response = await _paginationService.GetPagedResponse<AuthorVM, Author>(authors, Url.Action(nameof(Get))!, p);
+			
 			return Ok(response);
 		}
 
 		[HttpGet("{id}")]
 		[ProducesResponseType(typeof(AuthorVM), StatusCodes.Status200OK)]
-		public async Task<ActionResult> Get(string id)
+		public async Task<ActionResult> Get(Guid id)
 		{
 			var author = await _readRepository.GetById(id, false);
 			if (author is null)
 				return NotFound();
 
-			return Ok(author);
+			return Ok(_mapper.Map<AuthorVM>(author));
 		}
 
 		[HttpPost]
 		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
 		public async Task<IActionResult> Create([FromBody] AuthorCreateVM author)
 		{
-			//TODO: Add AutoMapper
-			await _writeRepository.AddAsync(new Author()
-			{
-				Name = author.Name,
-				Bio = author.Bio,
-				Email = author.Email
-			});
-
+			await _writeRepository.AddAsync(_mapper.Map<Author>(author));
 			await _writeRepository.SaveAsync();
 			return StatusCode(StatusCodes.Status201Created);
 		}
@@ -90,21 +68,14 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] AuthorUpdateVM author)
 		{
-			_writeRepository.Update(new Author()
-			{
-				Id = Guid.Parse(author.Id),
-				Name = author.Name,
-				Bio = author.Bio,
-				Email = author.Email
-			});
-
+			_writeRepository.Update(_mapper.Map<Author>(author));
 			await _writeRepository.SaveAsync();
-			return Ok((int)HttpStatusCode.OK);
+			return Ok();
 		}
 
 		[HttpDelete("{id}")]
 		[ProducesResponseType(typeof(AuthorVM), StatusCodes.Status200OK)]
-		public async Task<IActionResult> Delete(string id)
+		public async Task<IActionResult> Delete(Guid id)
 		{
 			var author = await _readRepository.GetById(id, false);
 			if (author is null)
@@ -118,17 +89,17 @@ namespace LinguisticsAPI.API.Controllers
 		[HttpPost("{id}/profile-picture")]
 		[Consumes("multipart/form-data")]
 		[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-		public async Task<IActionResult> UploadProfilePicture(string id, [FromForm] ProfilePictureVM profilePicture)
+		public async Task<IActionResult> UploadProfilePicture(Guid id, [FromForm] ProfilePictureVM profilePicture)
 		{
 			var result = await _storageService.UploadFileAsync(profilePicture.File, $"resources/authors-images");
 			
-
 			if (result.httpStatusCode == HttpStatusCode.OK)
 			{
-				var author = await _readRepository.GetById(id, true);
+				var author = await _readRepository.GetById(id, false);
 				if(author.ProfilePicture is not null)
 					_storageService.DeleteFileAsync("resources/authors-images", author.ProfilePicture);
 				author.ProfilePicture = result.filePath;
+				_writeRepository.Update(author);
 				_writeRepository.SaveAsync();
 				return Ok(result.filePath);
 			}
