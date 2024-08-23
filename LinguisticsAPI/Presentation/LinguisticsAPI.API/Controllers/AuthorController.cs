@@ -23,15 +23,17 @@ namespace LinguisticsAPI.API.Controllers
 		private readonly IStorageService _storageService;
 		private readonly IPaginationService _paginationService;
 		private readonly IMapper _mapper;
+		private readonly IConfiguration _configuration;
 
 		public AuthorController(IAuthorWriteRepository writeRepository, IAuthorReadRepository readRepository,
-			IStorageService storageService, IPaginationService paginationService, IMapper mapper)
+			IStorageService storageService, IPaginationService paginationService, IMapper mapper, IConfiguration configuration)
 		{
 			_writeRepository = writeRepository;
 			_readRepository = readRepository;
 			_storageService = storageService;
 			_paginationService = paginationService;
 			_mapper = mapper;
+			_configuration = configuration;
 		}
 
 		[HttpGet]
@@ -97,13 +99,16 @@ namespace LinguisticsAPI.API.Controllers
 		[Consumes("multipart/form-data")]
 		[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
 		public async Task<IActionResult> UploadProfilePicture(Guid id, [FromForm] ProfilePictureVM profilePicture)
-		{
+		{	
+			var author = await _readRepository.GetById(id, false);
+			if (author is null)
+				return NotFound();
+			
 			var result = await _storageService.UploadFileAsync(profilePicture.File, $"resources/authors-images");
 			
 			if (result.httpStatusCode == HttpStatusCode.OK)
-			{
-				var author = await _readRepository.GetById(id, false);
-				if(author.ProfilePicture is not null)
+			{ 
+				if(author?.ProfilePicture is not null)
 					_storageService.DeleteFileAsync("resources/authors-images", author.ProfilePicture);
 				author.ProfilePicture = result.filePath;
 				_writeRepository.Update(author);
@@ -115,6 +120,14 @@ namespace LinguisticsAPI.API.Controllers
 				return BadRequest();
 			}
 		}
+		
+		[HttpGet("{id}/profile-picture")]
+		public async Task<IActionResult> GetProfilePicture(Guid id)
+		{
+			var author = await _readRepository.GetById(id, false);
+			if (string.IsNullOrEmpty(author?.ProfilePicture))
+				return NotFound();
+			return Ok(await _storageService.GetFileAsync(_configuration["AuthorImageStoregePath"], author.ProfilePicture));
+		}
 	}
-
 }

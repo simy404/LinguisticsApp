@@ -21,7 +21,7 @@ public class StorageService : IStorageService
     public async Task<HttpStatusCode> DeleteFileAsync(string path, string fileName)
         => await _storage.DeleteFileAsync(path, fileName);
 
-    public async Task<IFormFile> GetFileAsync(string path, string fileName)
+    public async Task<string> GetFileAsync(string path, string fileName)
         => await _storage.GetFileAsync(path, fileName);
 
     public bool HasFile(string path, string fileName)

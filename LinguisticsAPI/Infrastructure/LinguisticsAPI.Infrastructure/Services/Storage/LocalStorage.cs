@@ -2,16 +2,19 @@
 using LinguisticsAPI.Application.Abstraction.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace LinguisticsAPI.Infrastructure.Services.Storage;
 
 public class LocalStorage : ILocalStorage
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IConfiguration _configuration;
     
-    public LocalStorage(IWebHostEnvironment webHostEnvironment)
+    public LocalStorage(IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
     {
         _webHostEnvironment = webHostEnvironment;
+        _configuration = configuration;
     }
     
     public async Task<(HttpStatusCode httpStatusCode, string filePath)> UploadFileAsync(IFormFile? formFile, string path)
@@ -54,21 +57,9 @@ public class LocalStorage : ILocalStorage
         return Task.FromResult(HttpStatusCode.NotFound);
     }
 
-    public async Task<IFormFile> GetFileAsync(string path, string fileName)
-    {
-        var combinePath = Path.Combine(path, fileName);
-        if (File.Exists(combinePath))
-        {
-            var memoryStream = new MemoryStream(await File.ReadAllBytesAsync(combinePath));
-            var file = new FormFile(memoryStream, 0, memoryStream.Length, null, Path.GetFileName(combinePath))
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "application/octet-stream"
-            };
-            return file;
-        }
-        return null;
-    }
+    public Task<string> GetFileAsync(string path, string fileName)
+        =>  Task.FromResult($"{_configuration["BaseLocalStorageUrl"]}/{path}/{fileName}");
+    
 
     public bool HasFile(string path, string fileName) => File.Exists(Path.Combine(path, fileName));
 }
