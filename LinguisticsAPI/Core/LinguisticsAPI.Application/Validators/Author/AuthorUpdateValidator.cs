@@ -13,8 +13,7 @@ namespace LinguisticsAPI.Application.Validators.Author
 		public AuthorUpdateValidator()
 		{
 			RuleFor(x => x.Id)
-				.NotEmpty().WithMessage("Id is required.")
-				.Must(BeAValidGuid).WithMessage("Id must be a valid GUID."); 
+				.NotEmpty().WithMessage("Id is required.");
 
 			RuleFor(x => x.Name)
 				.NotEmpty().WithMessage("Name is required.") 
@@ -27,11 +26,6 @@ namespace LinguisticsAPI.Application.Validators.Author
 			RuleFor(x => x.Email)
 				.NotEmpty().WithMessage("Email is required.")
 				.EmailAddress().WithMessage("Invalid email format.");
-		}
-		
-		private bool BeAValidGuid(string id)
-		{
-			return Guid.TryParse(id, out _);
 		}
 	}
 }

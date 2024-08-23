@@ -1,4 +1,6 @@
-﻿using LinguisticsAPI.Application.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +45,7 @@ namespace LinguisticsAPI.API.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public  async Task<IActionResult> Delete(string id)
+		public  async Task<IActionResult> Delete(Guid id)
 		{
 			_writeRepository.Remove(id);
 			await _writeRepository.SaveAsync();
@@ -51,7 +53,7 @@ namespace LinguisticsAPI.API.Controllers
 		}
 		
 		[HttpGet("{id}")]
-		public ActionResult Get(string id)
+		public ActionResult Get(Guid id)
 		{
 			var article = _readRepository.GetById(id);
 			return Ok(article);

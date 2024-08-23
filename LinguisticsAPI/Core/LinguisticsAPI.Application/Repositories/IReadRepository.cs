@@ -13,6 +13,6 @@ namespace LinguisticsAPI.Application.Repositories
 		IQueryable<T> GetAll(bool tracking = true);
 		IQueryable<T> GetWhere(Expression<Func<T,bool>> method, bool tracking = true);
 		Task<T> GetSingleAsync(Expression<Func<T,bool>> method, bool tracking = true);
-		Task<T> GetById(string id, bool tracking = true);
+		Task<T> GetById(Guid id, bool tracking = true);
 	}
 }

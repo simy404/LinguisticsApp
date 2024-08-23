@@ -42,9 +42,9 @@ namespace LinguisticsAPI.Persistence.Repositories
 			return entityEntry.State == EntityState.Deleted;
 		}
 
-		public async Task<bool> Remove(string id)
+		public async Task<bool> Remove(Guid id)
 		{
-			var data = await Table.FirstOrDefaultAsync(Data => Data.Id.Equals(Guid.Parse(id)));
+			var data = await Table.FirstOrDefaultAsync(Data => Data.Id.Equals(id));
 			EntityEntry<T> entityEntry =  Table.Remove(data);
 
 			return entityEntry.State == EntityState.Deleted;

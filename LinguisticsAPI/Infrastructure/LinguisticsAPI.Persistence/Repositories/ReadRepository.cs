@@ -28,18 +28,15 @@ namespace LinguisticsAPI.Persistence.Repositories
 			return query;
 		}
 
-		public async Task<T> GetById(string id, bool tracking = true) 
+		public async Task<T> GetById(Guid id, bool tracking = true) 
 		{
-			if(string.IsNullOrEmpty(id) || !Guid.TryParse(id , out Guid guidId))
-				return null;
-
 			var query = Table.AsQueryable();
 
 			if (!tracking)
 			{
 				query = query.AsNoTracking();
 			}
-			return await query.FirstOrDefaultAsync(entity => entity.Id.Equals(guidId));
+			return await query.FirstOrDefaultAsync(entity => entity.Id.Equals(id));
 		}
 
 		public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)

@@ -14,7 +14,7 @@ namespace LinguisticsAPI.Application.Repositories
 		bool Update(T entity);
 		bool Remove(T entity);
 		bool RemoveRange(List<T> entity);
-		Task<bool> Remove(string id);
+		Task<bool> Remove(Guid id);
 		Task<int> SaveAsync();
 	}
 }

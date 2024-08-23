@@ -13,7 +13,7 @@ namespace LinguisticsAPI.Domain.Entities
 		public string Bio { get; set; }
 		public string Email { get; set; }
 		
-		public string ProfilePicture { get; set; }
+		public string? ProfilePicture { get; set; }
 		public ICollection<Article> Articles { get; set; }
 	}
 }
