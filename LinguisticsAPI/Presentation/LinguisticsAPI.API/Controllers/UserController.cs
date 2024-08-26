@@ -33,15 +33,15 @@ namespace LinguisticsAPI.API.Controllers
 		}
 		
 		[HttpPost("[action]")]
-		public async Task<IActionResult> Login([FromBody] UserLoginVM user)
+		public async Task<IActionResult> Login([FromBody] AuthLoginVM auth)
 		{
-			var appUser = await _userManager.FindByEmailAsync(user.Email);
+			var appUser = await _userManager.FindByEmailAsync(auth.Email);
 			if (appUser == null)
 			{
 				return BadRequest("User not found");
 			}
 			
-			var result = await _userManager.CheckPasswordAsync(appUser, user.Password);
+			var result = await _userManager.CheckPasswordAsync(appUser, auth.Password);
 			if (!result)
 			{
 				return BadRequest("Password is incorrect");
