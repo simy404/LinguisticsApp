@@ -34,6 +34,6 @@ public class AuthController : ControllerBase
             return BadRequest(new {message="Invalid password."});
         
         var token = _authService.GenerateToken(user);
-        return Ok(new {message="User successfully logged in.",Token=token, id=user.Id});
+        return Ok(new {message="User successfully logged in.",TokenResponse=token, id=user.Id});
     }
 }

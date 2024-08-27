@@ -2,16 +2,17 @@
 using System.Threading.Tasks;
 using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ArticleController : ControllerBase
 	{
-		//write article crud operations
 		private readonly IArticleWriteRepository _writeRepository;
 		private readonly IArticleReadRepository _readRepository;
 		

@@ -40,7 +40,12 @@ namespace LinguisticsAPI.API
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 			
-			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) // -> Bearer
+			builder.Services.AddAuthentication(options =>
+				{
+					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+				})  // -> Bearer
 				.AddJwtBearer(option => option.TokenValidationParameters = new()
 				{
 					ValidateIssuer = true, // -> Issuer(İşaretleyen)
@@ -50,9 +55,10 @@ namespace LinguisticsAPI.API
 					
 					ValidIssuer = builder.Configuration["Token:Issuer"],
 					ValidAudience = builder.Configuration["Token:Audience"],
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecretKey"]))
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"]))
 				} );
-			
+			builder.Services.AddAuthorization();
+
 			// AutoMapper
 			builder.Services.AddAutoMapper(typeof(AuthorProfile));
 
