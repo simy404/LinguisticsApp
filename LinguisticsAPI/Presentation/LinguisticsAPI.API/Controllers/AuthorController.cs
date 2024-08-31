@@ -61,7 +61,7 @@ namespace LinguisticsAPI.API.Controllers
 		}
 
 		[HttpPost]
-		[ProducesResponseType(typeof(AuthorCreateVM), StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status201Created)]
 		public async Task<IActionResult> Create([FromBody] AuthorCreateVM author)
 		{
 			await _writeRepository.AddAsync(_mapper.Map<Author>(author));
