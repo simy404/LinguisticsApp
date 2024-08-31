@@ -12,5 +12,7 @@ namespace LinguisticsAPI.Domain.Entities
 		public string Name { get; set; }
 
 		public ICollection<Article> Articles { get; set; }
+		public ICollection<News> NewsTags { get; set; }
+
 	}
 }
