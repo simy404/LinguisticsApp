@@ -10,7 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinguisticsAPI.Application.Repositories.News;
+using LinguisticsAPI.Application.Repositories.NewsTranslation;
 using LinguisticsAPI.Domain.Entities.Identity;
+using LinguisticsAPI.Persistence.Repositories.News;
+using LinguisticsAPI.Persistence.Repositories.NewsTranslation;
 
 namespace LinguisticsAPI.Persistence
 {
@@ -38,6 +42,10 @@ namespace LinguisticsAPI.Persistence
 			services.AddScoped<ILanguageWriteRepository, LanguageWriteRepository>();
 			services.AddScoped<IAuthorReadRepository, AuthorReadRepository>();
 			services.AddScoped<IAuthorWriteRepository, AuthorWriteRepository>();
+			services.AddScoped<INewsReadRepository, NewsReadRepository>();
+			services.AddScoped<INewsWriteRepository, NewsWriteRepository>();
+			services.AddScoped<INewsTranslationWriteRepository, NewsTranslationWriteRepository>();
+			services.AddScoped<INewsTranslationReadRepository, NewsTranslationReadRepository>();
 		}
 	}
 }
