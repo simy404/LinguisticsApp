@@ -24,14 +24,16 @@ public class LanguageController : ControllerBase
     }
     
     [HttpGet]
+    [ProducesResponseType(typeof(LanguageVM), StatusCodes.Status200OK)]
     public  ActionResult GetAll()
     {
         var languages =  _readRepository.GetAll(false);
-        return Ok(languages);
+        return Ok(_mapper.Map<IEnumerable<LanguageVM>>(languages));
     }
     
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(LanguageVM), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Get(Guid id)
     {
         var language = await _readRepository.GetById(id, false);
@@ -41,20 +43,24 @@ public class LanguageController : ControllerBase
         return Ok(_mapper.Map<LanguageVM>(language));
     }
     
+    [HttpPost]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult> Create([FromBody] LanguageCreateVM languageVM)
     {
         var language = _readRepository.GetWhere(l => languageVM.Code == l.Code);
-        if (language is not null)
+        if (language.Any())
             return BadRequest("Language already exists");
         
-        var _language = _mapper.Map<Language>(languageVM);
-        await _writeRepository.AddAsync(_language);
+        var newLanguage = _mapper.Map<Language>(languageVM);
+        await _writeRepository.AddAsync(newLanguage);
+        await _writeRepository.SaveAsync();
         return Ok(StatusCodes.Status201Created);
     }
     
-    [HttpPut()]
+    [HttpPut]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Update([FromBody] LanguageUpdateVM languageVM)
@@ -65,10 +71,12 @@ public class LanguageController : ControllerBase
         
         _mapper.Map(languageVM, language);
          _writeRepository.Update(_mapper.Map<Language>(language));
-        return Ok();
+        await _writeRepository.SaveAsync();
+        return Ok("Language successfully updated");
     }
     
     [HttpDelete("{id}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
