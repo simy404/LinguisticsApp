@@ -9,7 +9,7 @@ namespace LinguisticsAPI.Persistence.Repositories
 {
 	public class ReadRepository<T> : IReadRepository<T> where T : BaseEntity
 	{
-		private readonly LinguisticsAPIDbContext _context;
+		protected readonly LinguisticsAPIDbContext _context;
 		public ReadRepository(LinguisticsAPIDbContext context)
 		{
 			_context = context;
