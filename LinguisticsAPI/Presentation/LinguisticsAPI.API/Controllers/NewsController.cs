@@ -25,7 +25,7 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetAll(string? languageCode)
     {
-        return Ok(_newsService.GetAllNews(languageCode ?? _configuration["DefaultLanguage"]));
+        return Ok(await _newsService.GetAllNews(languageCode ?? _configuration["DefaultLanguage"]));
     }
     
     [HttpGet("{id}")]

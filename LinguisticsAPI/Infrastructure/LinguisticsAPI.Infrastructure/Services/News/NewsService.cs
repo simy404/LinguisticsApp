@@ -1,4 +1,5 @@
-﻿using LinguisticsAPI.Application.Abstraction.News;
+﻿using LinguisticsAPI.Application.Abstraction.Language;
+using LinguisticsAPI.Application.Abstraction.News;
 using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Application.Repositories.News;
 using LinguisticsAPI.Application.Repositories.NewsTranslation;
@@ -14,15 +15,15 @@ public class NewsService : INewsService
     private readonly INewsReadRepository _newsReadRepository;
     private readonly INewsTranslationReadRepository _newsTranslationReadRepository;
     private readonly INewsTranslationWriteRepository _newsTranslationWriteRepository;
-    private readonly ILanguageReadRepository _languageReadRepository;
+    private readonly ILanguageService _languageService;
     
-    public NewsService(INewsWriteRepository newsWriteRepository, INewsReadRepository newsReadRepository, INewsTranslationReadRepository newsTranslationReadRepository, INewsTranslationWriteRepository newsTranslationWriteRepository, ILanguageReadRepository languageReadRepository)
+    public NewsService(INewsWriteRepository newsWriteRepository, INewsReadRepository newsReadRepository, INewsTranslationReadRepository newsTranslationReadRepository, INewsTranslationWriteRepository newsTranslationWriteRepository, ILanguageService languageService)
     {
         _newsWriteRepository = newsWriteRepository;
         _newsReadRepository = newsReadRepository;
         _newsTranslationReadRepository = newsTranslationReadRepository;
         _newsTranslationWriteRepository = newsTranslationWriteRepository;
-        _languageReadRepository = languageReadRepository;
+        _languageService = languageService;
     }
     
     public async Task<List<Domain.Entities.News>> GetAllNews(string? languageCode)
@@ -30,7 +31,7 @@ public class NewsService : INewsService
         if (string.IsNullOrEmpty(languageCode))
             throw new ArgumentNullException(nameof(languageCode));
         
-        var languageId = await getLanguageByCode(languageCode);
+        var languageId = await _languageService.GetLanguageByCode(languageCode);
         var news = await _newsReadRepository.GetNewsByLanguageIdAsync(languageId);
 
         return news;
@@ -43,7 +44,6 @@ public class NewsService : INewsService
 
     public async Task CreateNews(NewsCreateVM newsVM, string userId)
     {
-        // 1. News nesnesini oluştur
         var news = new Domain.Entities.News
         {
             Author = newsVM.Author,
@@ -61,23 +61,16 @@ public class NewsService : INewsService
             {
                 Title = t.Title,
                 Content = t.Content,
-                LanguageId =   getLanguageByCode(t.LanguageCode).Result,
+                LanguageId = _languageService.GetLanguageByCode(t.LanguageCode).Result,
                 UpdatedAt = null,
                 CreatedAt = DateTime.Now,
                 IsDeleted = false
                 
             }).ToList()
         };
-
-        // 2. News nesnesini ekle, EF otomatik olarak Translations'ları da ekleyecek
+        
         await _newsWriteRepository.AddAsync(news);
         await _newsWriteRepository.SaveAsync();
     }
-
-    private async Task<Guid> getLanguageByCode(string languageCode)
-    {
-        var language = await _languageReadRepository.GetWhere(x => x.Code == languageCode).FirstOrDefaultAsync();
-       
-        return language?.Id  ?? throw new Exception("Language not found");
-    }
+    
 }
