@@ -52,7 +52,10 @@ namespace LinguisticsAPI.Persistence.Contexts
 		public DbSet<Article> Articles { get; set; }
 		public DbSet<Author> Authors { get; set; }
 		public DbSet<Language> Languages { get; set; }
-		public DbSet<ArticleTranslation> ArticleTranslations { get; set; }
+		public DbSet<ArticleTranslation> ArticleTranslation { get; set; }
 		public DbSet<Tag> Tags { get; set; }
+		public DbSet<News> News { get; set; }
+		public DbSet<NewsTranslation> NewsTranslations { get; set; }
+		
 	}
 }

@@ -97,7 +97,7 @@ namespace LinguisticsAPI.Persistence.Migrations
 
                     b.HasIndex("LanguageId");
 
-                    b.ToTable("ArticleTranslations");
+                    b.ToTable("ArticleTranslation");
                 });
 
             modelBuilder.Entity("LinguisticsAPI.Domain.Entities.Author", b =>
@@ -335,7 +335,7 @@ namespace LinguisticsAPI.Persistence.Migrations
 
                     b.HasIndex("NewsId");
 
-                    b.ToTable("NewsTranslation");
+                    b.ToTable("NewsTranslations");
                 });
 
             modelBuilder.Entity("LinguisticsAPI.Domain.Entities.Tag", b =>
