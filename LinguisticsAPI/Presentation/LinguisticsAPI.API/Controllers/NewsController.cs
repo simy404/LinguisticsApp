@@ -1,5 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using LinguisticsAPI.Application.Abstraction.News;
+using LinguisticsAPI.Application.ViewModel.News;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers;
@@ -29,5 +32,14 @@ public class NewsController : ControllerBase
     public async Task<ActionResult> Get(Guid id, string? languageCode)
     {
         return Ok(_newsService.GetNewsById(id, languageCode ?? _configuration["DefaultLanguage"]));
+    }
+    
+    [HttpPost]
+    [Authorize]
+    public async Task<ActionResult> Create([FromBody] NewsCreateVM newsVM)
+    {
+        var userId =  User.FindFirst("id")?.Value;
+        await _newsService.CreateNews(newsVM, userId);
+        return Ok(StatusCodes.Status201Created);
     }
 }

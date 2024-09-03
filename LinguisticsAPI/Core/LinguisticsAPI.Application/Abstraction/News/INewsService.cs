@@ -6,4 +6,6 @@ public interface INewsService
 {
     Task<List<Domain.Entities.News>> GetAllNews(string? languageCode);
     Task<NewsVM> GetNewsById(Guid id, string? languageCode);
+    
+    Task CreateNews(NewsCreateVM newsVM, string userId);
 }
