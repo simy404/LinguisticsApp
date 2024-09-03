@@ -1,10 +1,13 @@
 ﻿using LinguisticsAPI.Application.Abstraction.Language;
 using LinguisticsAPI.Application.Abstraction.News;
+using LinguisticsAPI.Application.DTOs;
 using LinguisticsAPI.Application.Repositories;
 using LinguisticsAPI.Application.Repositories.News;
 using LinguisticsAPI.Application.Repositories.NewsTranslation;
+using LinguisticsAPI.Application.RequestParameters.Common;
 using LinguisticsAPI.Application.ViewModel.News;
 using LinguisticsAPI.Domain.Entities;
+using LinguisticsAPI.Infrastructure.Extension;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinguisticsAPI.Infrastructure.Services.News;
@@ -26,15 +29,45 @@ public class NewsService : INewsService
         _languageService = languageService;
     }
     
-    public async Task<List<Domain.Entities.News>> GetAllNews(string? languageCode)
+    public async Task<List<NewsDto>> GetAllNews(string? languageCode)
     {
         if (string.IsNullOrEmpty(languageCode))
             throw new ArgumentNullException(nameof(languageCode));
-        
-        var languageId = await _languageService.GetLanguageByCode(languageCode);
-        var news = await _newsReadRepository.GetNewsByLanguageIdAsync(languageId);
 
-        return news;
+        var languageId = await _languageService.GetLanguageByCode(languageCode);
+        
+        var newsQuery = _newsReadRepository.GetAll()
+            .IncludeMultiple(
+                n => n.Translations,
+                n => n.Tags
+            );
+
+        var result =await  newsQuery
+            .Select(n => new NewsDto
+            {
+                Id = n.Id,
+                Author = n.Author,
+                ImagePath = n.ImagePath,
+                SourceLink = n.SourceLink,
+                SharedBy = new SharedByDto
+                {
+                    Id = n.SharedBy.Id,
+                    FullName = n.SharedBy.FullName,
+                    ProfilePicture = n.SharedBy.ProfilePicture,
+                    Email = n.SharedBy.Email
+                },
+                Translations = n.Translations.Where(t => t.LanguageId == languageId)
+                    .Select(t => new TranslationDto
+                    {
+                        Title = t.Title,
+                        Content = t.Content,
+                        LanguageCode = t.Language.Code
+                    }).ToList(),
+                    Tags = n.Tags.Select(tag => tag.Name).ToList()
+                }).ToListAsync();
+            
+        
+        return result;
     }
 
     public Task<NewsVM> GetNewsById(Guid id, string? languageCode)
