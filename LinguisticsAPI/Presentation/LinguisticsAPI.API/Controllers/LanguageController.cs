@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers;
 
-[Authorize()]
 [Route("api/[controller]")]
 [ApiController]
 public class LanguageController : ControllerBase
