@@ -61,5 +61,6 @@ namespace LinguisticsAPI.Persistence.Repositories
 			}
 			return query;
 		}
+		
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace LinguisticsAPI.Persistence.Extension;
+namespace LinguisticsAPI.Infrastructure.Extension;
 
 
 

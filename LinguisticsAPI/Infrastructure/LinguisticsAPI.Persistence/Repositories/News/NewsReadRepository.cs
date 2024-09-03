@@ -1,4 +1,5 @@
 ﻿using LinguisticsAPI.Application.Repositories.News;
+using LinguisticsAPI.Domain.Entities;
 using LinguisticsAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,16 +23,27 @@ public class NewsReadRepository : ReadRepository<Domain.Entities.News>, INewsRea
                 ImagePath = n.ImagePath,
                 SourceLink = n.SourceLink,
                 SharedById = n.SharedById,
-                Tags = n.Tags,
-                Translations = n.Translations.Where(t => t.LanguageId == languageId).ToList()
+                Tags = n.Tags.Select(t => new Domain.Entities.Tag
+                {
+                    Id = t.Id,
+                    Name = t.Name
+                }).ToList(),
+                Translations = n.Translations.Where(t => t.LanguageId == languageId)
+                    .Select(t => new Domain.Entities.NewsTranslation
+                    {
+                        Id = t.Id,
+                        LanguageId = t.LanguageId,
+                        Title = t.Title,
+                        Content = t.Content
+                    }).ToList()
             })
             .ToListAsync();
         
-        var newsList2= await Table
-            .Include(n => n.Translations)
-            .ThenInclude(t => t.Language)
-            .Where(n => n.Translations.Any(t => t.LanguageId == languageId))
-            .ToListAsync();
+        // var newsList2= await Table
+        //     .Include(n => n.Translations)
+        //     .ThenInclude(t => t.Language)
+        //     .Where(n => n.Translations.Any(t => t.LanguageId == languageId))
+        //     .ToListAsync();
 
         return newsList;
     }
