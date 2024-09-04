@@ -33,7 +33,7 @@ public class NewsService : INewsService
         _mapper = mapper;
     }
     
-    public async Task<List<NewsDto>> GetAllNews(string? languageCode)
+    public async Task<List<NewsVM>> GetAllNews(string? languageCode)
     {
         if (string.IsNullOrEmpty(languageCode))
             throw new ArgumentNullException(nameof(languageCode));
@@ -47,18 +47,21 @@ public class NewsService : INewsService
             ).Where(n => n.Translations.Any(t => t.LanguageId == languageId));
         
         var result = await newsQuery
-            .ProjectTo<NewsDto>(_mapper.ConfigurationProvider) 
+            .ProjectTo<NewsVM>(_mapper.ConfigurationProvider) 
             .ToListAsync();
         
         return result;
     }
 
-    public async Task<NewsDto> GetNewsById(Guid id, string? languageCode)
+    public async Task<NewsVM> GetNewsById(Guid id, string? languageCode)
     {
         if (string.IsNullOrEmpty(languageCode))
             throw new ArgumentNullException(nameof(languageCode));
 
         var languageId = await _languageService.GetLanguageByCode(languageCode);
+        
+        if(languageId == Guid.Empty)
+            throw new Exception("Language not found");
         
         var newsQuery = _newsReadRepository.GetWhere(n => n.Id == id)
             .IncludeMultiple(
@@ -67,12 +70,13 @@ public class NewsService : INewsService
             ).Where(n => n.Translations.Any(t => t.LanguageId == languageId));
 
         var result = await newsQuery
-            .ProjectTo<NewsDto>(_mapper.ConfigurationProvider) 
+            .ProjectTo<NewsVM>(_mapper.ConfigurationProvider) 
             .FirstOrDefaultAsync();
         
         return result;
     }
-
+    
+    
     public async Task CreateNews(NewsCreateVM newsVM, string userId)
     {
         var news = new Domain.Entities.News

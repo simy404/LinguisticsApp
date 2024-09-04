@@ -31,7 +31,7 @@ public class NewsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(Guid id, string? languageCode)
     {
-        return Ok(_newsService.GetNewsById(id, languageCode ?? _configuration["DefaultLanguage"]));
+        return Ok(await _newsService.GetNewsById(id, languageCode ?? _configuration["DefaultLanguage"]));
     }
     
     [HttpPost]
