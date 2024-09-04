@@ -1,4 +1,6 @@
-﻿using LinguisticsAPI.Application.Abstraction.Language;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using LinguisticsAPI.Application.Abstraction.Language;
 using LinguisticsAPI.Application.Abstraction.News;
 using LinguisticsAPI.Application.DTOs;
 using LinguisticsAPI.Application.Repositories;
@@ -19,14 +21,16 @@ public class NewsService : INewsService
     private readonly INewsTranslationReadRepository _newsTranslationReadRepository;
     private readonly INewsTranslationWriteRepository _newsTranslationWriteRepository;
     private readonly ILanguageService _languageService;
+    private readonly IMapper _mapper;
     
-    public NewsService(INewsWriteRepository newsWriteRepository, INewsReadRepository newsReadRepository, INewsTranslationReadRepository newsTranslationReadRepository, INewsTranslationWriteRepository newsTranslationWriteRepository, ILanguageService languageService)
+    public NewsService(INewsWriteRepository newsWriteRepository, INewsReadRepository newsReadRepository, INewsTranslationReadRepository newsTranslationReadRepository, INewsTranslationWriteRepository newsTranslationWriteRepository, ILanguageService languageService, IMapper mapper)
     {
         _newsWriteRepository = newsWriteRepository;
         _newsReadRepository = newsReadRepository;
         _newsTranslationReadRepository = newsTranslationReadRepository;
         _newsTranslationWriteRepository = newsTranslationWriteRepository;
         _languageService = languageService;
+        _mapper = mapper;
     }
     
     public async Task<List<NewsDto>> GetAllNews(string? languageCode)
@@ -40,39 +44,33 @@ public class NewsService : INewsService
             .IncludeMultiple(
                 n => n.Translations,
                 n => n.Tags
-            );
-
-        var result =await  newsQuery
-            .Select(n => new NewsDto
-            {
-                Id = n.Id,
-                Author = n.Author,
-                ImagePath = n.ImagePath,
-                SourceLink = n.SourceLink,
-                SharedBy = new SharedByDto
-                {
-                    Id = n.SharedBy.Id,
-                    FullName = n.SharedBy.FullName,
-                    ProfilePicture = n.SharedBy.ProfilePicture,
-                    Email = n.SharedBy.Email
-                },
-                Translations = n.Translations.Where(t => t.LanguageId == languageId)
-                    .Select(t => new TranslationDto
-                    {
-                        Title = t.Title,
-                        Content = t.Content,
-                        LanguageCode = t.Language.Code
-                    }).ToList(),
-                    Tags = n.Tags.Select(tag => tag.Name).ToList()
-                }).ToListAsync();
-            
+            ).Where(n => n.Translations.Any(t => t.LanguageId == languageId));
+        
+        var result = await newsQuery
+            .ProjectTo<NewsDto>(_mapper.ConfigurationProvider) 
+            .ToListAsync();
         
         return result;
     }
 
-    public Task<NewsVM> GetNewsById(Guid id, string? languageCode)
+    public async Task<NewsDto> GetNewsById(Guid id, string? languageCode)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(languageCode))
+            throw new ArgumentNullException(nameof(languageCode));
+
+        var languageId = await _languageService.GetLanguageByCode(languageCode);
+        
+        var newsQuery = _newsReadRepository.GetWhere(n => n.Id == id)
+            .IncludeMultiple(
+                n => n.Translations,
+                n => n.Tags
+            ).Where(n => n.Translations.Any(t => t.LanguageId == languageId));
+
+        var result = await newsQuery
+            .ProjectTo<NewsDto>(_mapper.ConfigurationProvider) 
+            .FirstOrDefaultAsync();
+        
+        return result;
     }
 
     public async Task CreateNews(NewsCreateVM newsVM, string userId)
