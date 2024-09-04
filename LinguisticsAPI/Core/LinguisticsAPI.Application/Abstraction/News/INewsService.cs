@@ -7,7 +7,7 @@ namespace LinguisticsAPI.Application.Abstraction.News;
 public interface INewsService
 {
     Task<List<NewsDto>> GetAllNews(string? languageCode);
-    Task<NewsVM> GetNewsById(Guid id, string? languageCode);
+    Task<NewsDto> GetNewsById(Guid id, string? languageCode);
     
     Task CreateNews(NewsCreateVM newsVM, string userId);
 }
