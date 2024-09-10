@@ -25,7 +25,22 @@ namespace LinguisticsAPI.Persistence.Contexts
 				.HasMany(a => a.Articles)
 				.WithOne(b => b.Author)
 				.IsRequired(false); // Author oluşturulurken Article zorunlu değil
-
+			
+			// LinkTopic -> SubTopics ilişkisi (Restict Delete) : Bir LinkTopic silinirken altındaki SubTopics silinmesin
+			modelBuilder.Entity<LinkTopic>()
+				.HasMany(lt => lt.SubTopics)
+				.WithOne(lt => lt.Parent)
+				.HasForeignKey(lt => lt.ParentId)
+				.IsRequired(false)
+				.OnDelete(DeleteBehavior.Restrict);;
+			
+			// LinkTopic -> Link ilişkisi (Cascade Delete)
+			modelBuilder.Entity<LinkTopic>()
+				.HasMany(lt => lt.LinkList)
+				.WithOne(l => l.LinkTopic)
+				.HasForeignKey(l => l.LinkTopicId)
+				.OnDelete(DeleteBehavior.Cascade);
+			
 			base.OnModelCreating(modelBuilder);
 		}
 		
@@ -56,6 +71,8 @@ namespace LinguisticsAPI.Persistence.Contexts
 		public DbSet<Tag> Tags { get; set; }
 		public DbSet<News> News { get; set; }
 		public DbSet<NewsTranslation> NewsTranslations { get; set; }
+		public DbSet<Link> Links { get; set; }
+		public DbSet<LinkTopic> LinkTopics { get; set; }
 		
 	}
 }
