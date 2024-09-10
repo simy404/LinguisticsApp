@@ -14,5 +14,10 @@ public class LinkTopicProfile : Profile
             .ForMember(dest => dest.SubTopics, opt => opt.Ignore());
 
         CreateMap<LinkCreateVM, Link>();
+
+        CreateMap<LinkTopic, LinkTopicVM>()
+            .ForMember(dest => dest.SubTopics, opt => opt.MapFrom(src => src.SubTopics))
+            .ForMember(dest => dest.Links, opt => opt.MapFrom(src => src.LinkList));
+        CreateMap<Link, LinkVM>();
     }
 }

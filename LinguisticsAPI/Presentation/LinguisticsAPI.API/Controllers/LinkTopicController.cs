@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using LinguisticsAPI.Application.Repositories.LinkTopic;
 using LinguisticsAPI.Application.ViewModel.LinkTopic;
 using LinguisticsAPI.Domain.Entities;
@@ -30,27 +31,35 @@ public class LinkTopicController : ControllerBase
     [HttpGet]
     public  async Task<ActionResult> GetAll() // ->  GET /linktopics
     {
-        var linkTopics =  _readRepository.GetWhere(x => x.ParentId == null)
+        var linkQuery =  _readRepository.GetWhere(x => x.ParentId == null)
             .IncludeMultiple(
                 x => x.SubTopics,
-                x => x.LinkList
+                x
+                    => x.LinkList
             );
-        return Ok(linkTopics);
+        
+        var result = await linkQuery
+            .ProjectTo<LinkTopicVM>(_mapper.ConfigurationProvider) 
+            .ToListAsync();
+        
+        return Ok(result);
     }
     
     [HttpGet("{id}")]
     public async Task<ActionResult> Get(Guid id) // ->  GET /linktopics/{id}
     {
-        var linkTopic = await _readRepository.GetWhere(x => x.Id == id)
-            .IncludeMultiple(
-                x => x.SubTopics,
-                x => x.LinkList
-            ).FirstOrDefaultAsync();
+        var linkQuery = _readRepository.GetWhere(x => x.Id == id)
+            .IncludeMultiple(x => x.SubTopics, x => x.LinkList);
+           
         
-        if (linkTopic is null)
+        var result = await linkQuery
+            .ProjectTo<LinkTopicVM>(_mapper.ConfigurationProvider) 
+            .ToListAsync();
+        
+        if (result is null)
             return NotFound();
 
-        return Ok(linkTopic);
+        return Ok(result);
     }
     
     [HttpPost]
@@ -143,7 +152,7 @@ public class LinkTopicController : ControllerBase
         
         _linkWriteRepository.Remove(existingLink);
         await _writeRepository.SaveAsync();
-        return Ok();
+        return NoContent();
     }
     
 }
