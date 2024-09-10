@@ -4,6 +4,7 @@ using LinguisticsAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinguisticsAPI.Persistence.Migrations
 {
     [DbContext(typeof(LinguisticsAPIDbContext))]
-    partial class LinguisticsAPIDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240909214640_addLinkTable")]
+    partial class addLinkTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,6 +312,7 @@ namespace LinguisticsAPI.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("ParentId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -604,7 +608,8 @@ namespace LinguisticsAPI.Persistence.Migrations
                     b.HasOne("LinguisticsAPI.Domain.Entities.LinkTopic", "Parent")
                         .WithMany("SubTopics")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Parent");
                 });
