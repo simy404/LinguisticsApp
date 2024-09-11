@@ -4,6 +4,7 @@ using LinguisticsAPI.Application.Repositories.LinkTopic;
 using LinguisticsAPI.Application.ViewModel.LinkTopic;
 using LinguisticsAPI.Domain.Entities;
 using LinguisticsAPI.Infrastructure.Extension;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,7 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<LinkTopicVM>), StatusCodes.Status200OK)]
     public  async Task<ActionResult> GetAll() // ->  GET /linktopics
     {
         var linkQuery =  _readRepository.GetWhere(x => x.ParentId == null)
@@ -46,6 +48,8 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(LinkTopicVM), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Get(Guid id) // ->  GET /linktopics/{id}
     {
         var linkQuery = _readRepository.GetWhere(x => x.Id == id)
@@ -63,6 +67,8 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpPost]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult> Create([FromBody] LinkTopicCreateVM linkTopic) // ->  POST /linktopics
     {
         await _writeRepository.AddAsync(_mapper.Map<LinkTopic>(linkTopic));
@@ -83,6 +89,9 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(Guid id) // ->  DELETE /linktopics/{id}
     {
         var existingLinkTopic =  await _readRepository.GetWhere(x => x.Id == id)
@@ -112,6 +121,9 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpPost("{id}/links")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> CreateLink(Guid id, [FromBody] LinkCreateVM link) // ->  POST /linktopics/{id}/links
     {
         var linkTopic = await _readRepository.GetById(id);
@@ -128,6 +140,9 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpPut("{id}/links/{linkId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> UpdateLink(Guid id, Guid linkId, [FromBody] LinkCreateVM link) // ->  PUT /linktopics/{id}/links/{linkId}
     {
         var existingLink = await _linkReadRepository.GetById(linkId, false);
@@ -144,6 +159,9 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpDelete("{id}/links/{linkId}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> DeleteLink(Guid id, Guid linkId) // ->  DELETE /linktopics/{id}/links/{linkId}
     {
         var existingLink = await _linkReadRepository.GetById(linkId);
