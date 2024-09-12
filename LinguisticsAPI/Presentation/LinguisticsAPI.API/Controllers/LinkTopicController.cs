@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LinguisticsAPI.Application.Repositories.Link;
 using LinguisticsAPI.Application.Repositories.LinkTopic;
 using LinguisticsAPI.Application.ViewModel.LinkTopic;
 using LinguisticsAPI.Domain.Entities;

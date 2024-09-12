@@ -73,6 +73,8 @@ namespace LinguisticsAPI.Persistence.Contexts
 		public DbSet<NewsTranslation> NewsTranslations { get; set; }
 		public DbSet<Link> Links { get; set; }
 		public DbSet<LinkTopic> LinkTopics { get; set; }
+		public DbSet<VideoLink> VideoLinks { get; set; }
+		public DbSet<VideoTopic> VideoTopics { get; set; }
 		
 	}
 }

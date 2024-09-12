@@ -1,4 +1,4 @@
-﻿namespace LinguisticsAPI.Application.Repositories.LinkTopic;
+﻿namespace LinguisticsAPI.Application.Repositories.Link;
 
 public interface ILinkWriteRepository : IWriteRepository<Domain.Entities.Link>
 {
