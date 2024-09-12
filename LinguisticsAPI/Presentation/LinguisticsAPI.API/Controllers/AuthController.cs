@@ -2,6 +2,7 @@
 using LinguisticsAPI.Application.Abstraction.Auth;
 using LinguisticsAPI.Application.ViewModel.User;
 using LinguisticsAPI.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

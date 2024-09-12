@@ -77,6 +77,8 @@ public class LinkTopicController : ControllerBase
     }
     
     [HttpPut("{id}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> Update(Guid id, [FromBody] LinkTopicCreateVM linkTopic) // ->  PUT /linktopics/{id}
     {
         var existingLinkTopic = await _readRepository.GetById(id, false);
