@@ -10,13 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinguisticsAPI.Application.Repositories.Link;
 using LinguisticsAPI.Application.Repositories.LinkTopic;
 using LinguisticsAPI.Application.Repositories.News;
 using LinguisticsAPI.Application.Repositories.NewsTranslation;
+using LinguisticsAPI.Application.Repositories.VideoLink;
+using LinguisticsAPI.Application.Repositories.VideoTopic;
 using LinguisticsAPI.Domain.Entities.Identity;
+using LinguisticsAPI.Persistence.Repositories.Link;
 using LinguisticsAPI.Persistence.Repositories.LinkTopic;
 using LinguisticsAPI.Persistence.Repositories.News;
 using LinguisticsAPI.Persistence.Repositories.NewsTranslation;
+using LinguisticsAPI.Persistence.Repositories.VideoLink;
+using LinguisticsAPI.Persistence.Repositories.VideoTopic;
 
 namespace LinguisticsAPI.Persistence
 {
@@ -52,6 +58,10 @@ namespace LinguisticsAPI.Persistence
 			services.AddScoped<ILinkTopicWriteRepository, LinkTopicWriteRepository>();
 			services.AddScoped<ILinkReadRepository, LinkReadRepository>();
 			services.AddScoped<ILinkWriteRepository, LinkWriteRepository>();
+			services.AddScoped<IVideoLinkReadRepository, VideoLinkReadRepository>();
+			services.AddScoped<IVideoLinkWriteRepository, VideoLinkWriteRepository>();
+			services.AddScoped<IVideoTopicReadRepository, VideoTopicReadRepository>();
+			services.AddScoped<IVideoTopicWriteRepository, VideoTopicWriteRepository>();
 		}
 	}
 }
