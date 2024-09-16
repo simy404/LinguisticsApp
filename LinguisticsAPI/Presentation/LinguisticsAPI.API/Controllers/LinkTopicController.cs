@@ -80,13 +80,17 @@ public class LinkTopicController : ControllerBase
     [HttpPut("{id}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Update(Guid id, [FromBody] LinkTopicCreateVM linkTopic) // ->  PUT /linktopics/{id}
     {
         var existingLinkTopic = await _readRepository.GetById(id, false);
         if (existingLinkTopic is null)
             return NotFound();
         
-        _writeRepository.Update(_mapper.Map<LinkTopic>(linkTopic));
+        var updatedLinkTopic = _mapper.Map<LinkTopic>(linkTopic);
+        updatedLinkTopic.Id = id;
+
+        _writeRepository.Update(updatedLinkTopic);
         await _writeRepository.SaveAsync();
         return Ok();
     }
@@ -120,7 +124,7 @@ public class LinkTopicController : ControllerBase
         if (linkTopic is null)
             return NotFound();
         
-        return Ok(linkTopic);
+        return Ok(_mapper.Map<IEnumerable<LinkVM>>(linkTopic));
     }
     
     [HttpPost("{id}/links")]
