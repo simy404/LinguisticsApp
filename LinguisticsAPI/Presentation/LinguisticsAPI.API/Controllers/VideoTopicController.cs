@@ -3,6 +3,7 @@ using LinguisticsAPI.Application.Repositories.VideoLink;
 using LinguisticsAPI.Application.Repositories.VideoTopic;
 using LinguisticsAPI.Application.ViewModel.VideoTopic;
 using LinguisticsAPI.Domain.Entities;
+using LinguisticsAPI.Infrastructure.Extension;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinguisticsAPI.API.Controllers;
@@ -30,7 +31,7 @@ public class VideoTopicController : ControllerBase
         [HttpGet]
         public ActionResult Get() // ->  GET /videotopics
         {
-            var videoTopics = _readRepository.GetAll(false);
+            var videoTopics = _readRepository.GetAll(false).IncludeMultiple(x => x.VideoLinks);
             return Ok(_mapper.Map<IEnumerable<VideoTopicVM>>(videoTopics));
         }
         
