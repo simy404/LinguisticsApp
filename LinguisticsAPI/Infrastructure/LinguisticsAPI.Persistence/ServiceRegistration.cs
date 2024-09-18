@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LinguisticsAPI.Application.Repositories.FieldTranslation;
+using LinguisticsAPI.Application.Repositories.LinguisticField;
 using LinguisticsAPI.Application.Repositories.Link;
 using LinguisticsAPI.Application.Repositories.LinkTopic;
 using LinguisticsAPI.Application.Repositories.News;
@@ -17,6 +19,8 @@ using LinguisticsAPI.Application.Repositories.NewsTranslation;
 using LinguisticsAPI.Application.Repositories.VideoLink;
 using LinguisticsAPI.Application.Repositories.VideoTopic;
 using LinguisticsAPI.Domain.Entities.Identity;
+using LinguisticsAPI.Persistence.Repositories.FieldTranslation;
+using LinguisticsAPI.Persistence.Repositories.LinguisticField;
 using LinguisticsAPI.Persistence.Repositories.Link;
 using LinguisticsAPI.Persistence.Repositories.LinkTopic;
 using LinguisticsAPI.Persistence.Repositories.News;
@@ -62,6 +66,10 @@ namespace LinguisticsAPI.Persistence
 			services.AddScoped<IVideoLinkWriteRepository, VideoLinkWriteRepository>();
 			services.AddScoped<IVideoTopicReadRepository, VideoTopicReadRepository>();
 			services.AddScoped<IVideoTopicWriteRepository, VideoTopicWriteRepository>();
+			services.AddScoped<ILinguisticFieldReadRepository, LinguisticFieldReadRepository>();
+			services.AddScoped<ILinguisticFieldWriteRepository, LinguisticFieldWriteRepository>();
+			services.AddScoped<IFieldTranslationReadRepository, FieldTranslationReadRepository>();
+			services.AddScoped<IFieldTranslationWriteRepository, FieldTranslationWriteRepository>();
 		}
 	}
 }
